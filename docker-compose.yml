@@ -1,0 +1,41 @@
+version: '3'
+
+services:
+  website:
+    build:
+      context: ./frontendService/
+      dockerfile: Dockerfile
+    depends_on:
+      - database_controller
+    ports:
+      - '8080:8080'
+
+  database_controller:
+    build:
+      dockerfile: Dockerfile
+      context: ./backendService/
+    environment:
+      - APP_PORT=8000
+      - DATABASE_URL=postgresql://postgres:postgres@postgres_db:5432/todoappdb
+      - JWT_ACCESS_KEY=qiwehjqiwueyhquwyeh
+      - JWT_REFRESH_KEY=89i7934er3iujderujdujisw8iuw
+    depends_on:
+      - postgres_db
+    ports:
+      - '8000:8000'
+
+  postgres_db:
+    image: postgres:latest
+    restart:
+      'always'
+#    ports:
+#      - '5000:5432'
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: todoappdb
+    volumes:
+      - postgres_db:/var/lib/postgresql/data
+
+volumes:
+  postgres_db:
